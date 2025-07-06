@@ -70,7 +70,7 @@ uvicorn main:app --reload
    ```
 2. Создайте репозиторий на GitHub и следуйте инструкциям для push:
    ```bash
-   git remote add origin https://github.com/ВАШ_ПОЛЬЗОВАТЕЛЬ/Notion_and_Ai_bot.git
+   git remote add origin https://github.com/shy3ony/Notion_and_Ai_bot.git
    git branch -M main
    git push -u origin main
    ``` 
