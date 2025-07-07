@@ -36,9 +36,11 @@ async def help_handler(message: Message):
         "<b>Доступные команды:</b>\n"
         "/start — приветствие, картинка, кнопка для перехода в меню группы и на сайт.\n"
         "/link_for_notion_and_ai — получить приглашение в группу и приветственное сообщение для новых участников.\n"
+        "/button — Нажмите кнопку ниже, чтобы открыть меню группы Notion & AI. Выводит это сообщение и кнопку.\n"
+        "/webapp — получить специальную синюю кнопку для открытия меню группы как мини-приложения внутри Telegram (в приватном чате) или обычную ссылку (в группе).\n"
         "/help — список команд и их описание.\n"
         "\n"
-        "<b>Примечание:</b> Кнопки для перехода на сайт-меню появляются после команды /start.\n"
+        "<b>Примечание:</b> Кнопки для перехода на сайт-меню появляются после команды /start, /button или /webapp. В группе команда /webapp отправляет обычную ссылку, а в личке — мини-приложение.\n"
     )
     await message.answer(text, parse_mode="HTML")
 
@@ -51,6 +53,46 @@ async def link_for_notion_and_ai_handler(message: Message):
         f"{group_link}"
     )
     await message.answer(text, parse_mode="HTML")
+
+@dp.message(Command("button"))
+async def button_handler(message: Message):
+    inline_kb = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [InlineKeyboardButton(text="Меню группы Notion & AI", url=web3_url)]
+        ]
+    )
+    await message.answer(
+        "<b>Нажмите кнопку ниже, чтобы открыть меню группы Notion & AI</b>",
+        reply_markup=inline_kb,
+        parse_mode="HTML"
+    )
+
+@dp.message(Command("webapp"))
+async def webapp_handler(message: Message):
+    webapp_url = "https://notion-and-ai-bot.vercel.app"
+    if message.chat.type == "private":
+        # В приватном чате — web_app-кнопка
+        inline_kb = InlineKeyboardMarkup(
+            inline_keyboard=[[
+                InlineKeyboardButton(text="Открыть в Telegram", web_app={"url": webapp_url})
+            ]]
+        )
+        await message.answer(
+            "🚀 Открой мини-приложение:",
+            reply_markup=inline_kb
+        )
+    else:
+        # В группе — обычная кнопка с url
+        inline_kb = InlineKeyboardMarkup(
+            inline_keyboard=[[
+                InlineKeyboardButton(text="Открыть меню группы Notion & AI", url=webapp_url)
+            ]]
+        )
+        await message.answer(
+            "<b>Открыть меню группы Notion & AI</b> — нажмите кнопку ниже!",
+            reply_markup=inline_kb,
+            parse_mode="HTML"
+        )
 
 async def main():
     await dp.start_polling(bot)
