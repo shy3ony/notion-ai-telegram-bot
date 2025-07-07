@@ -1,6 +1,6 @@
 import asyncio
 from aiogram import Bot, Dispatcher
-from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton, FSInputFile, InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton, FSInputFile, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from aiogram.filters import Command
 
 TELEGRAM_TOKEN = "8129671831:AAEvmBKaF0oGcV5O-S-lnpuI4yvF3hL0SvQ"
@@ -8,7 +8,7 @@ TELEGRAM_TOKEN = "8129671831:AAEvmBKaF0oGcV5O-S-lnpuI4yvF3hL0SvQ"
 bot = Bot(token=TELEGRAM_TOKEN)
 dp = Dispatcher()
 
-web3_url = "http://127.0.0.1:8000"  # Локальная страница
+web3_url = "https://notion-and-ai-bot.vercel.app"  # Публичная страница
 
 @dp.message(Command("start"))
 async def start_handler(message: Message):
@@ -18,23 +18,17 @@ async def start_handler(message: Message):
         "Здесь вы найдёте полезные материалы, уроки, новости и сможете пообщаться с единомышленниками!"
     )
     await message.answer_photo(photo, caption=caption, parse_mode="HTML")
-    keyboard = ReplyKeyboardMarkup(
-        keyboard=[[KeyboardButton(text="Открыть меню группы Notion & AI")]],
-        resize_keyboard=True
-    )
-    await message.answer("<b>Добро пожаловать!</b> Нажмите кнопку ниже, чтобы открыть наше меню группы Notion & AI, или используйте команду /help, чтобы ознакомиться с возможными командами.", reply_markup=keyboard, parse_mode="HTML")
-    # Дополнительное сообщение с двумя inline-кнопками
+    # Одна кнопка callback, вторая с url
     inline_kb = InlineKeyboardMarkup(
         inline_keyboard=[
-            [InlineKeyboardButton(text="Перейти в Меню группы", url=web3_url)],
+            [InlineKeyboardButton(text="Открыть меню группы Notion & AI", url=web3_url)],
             [InlineKeyboardButton(text="Instagram группы", url="https://www.instagram.com/notion.and.ai/?igsh=eHRzcXByODJtaWsx#")]
         ]
     )
-    await message.answer("Открыть меню группы Notion & AI на сайте или Instagram:", reply_markup=inline_kb)
-
-@dp.message(lambda m: m.text == "Открыть меню группы Notion & AI")
-async def open_web3_app(message: Message):
-    await message.answer(f"Ваша страница: {web3_url}")
+    await message.answer(
+        "<b>Добро пожаловать!</b> Нажмите одну из кнопок ниже, чтобы открыть меню группы Notion & AI или Instagram.\n\n/help — список команд и их описание.",
+        reply_markup=inline_kb, parse_mode="HTML"
+    )
 
 @dp.message(Command("help"))
 async def help_handler(message: Message):
